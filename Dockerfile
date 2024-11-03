@@ -1,4 +1,6 @@
-FROM arm32v7/python:3.9
+FROM python:3.12.7-slim 
+
+RUN apt-get update && apt-get install gcc python3-dev wireless-tools -y && apt-get clean
 
 RUN mkdir -p /app/config
 RUN mkdir -p /app/host
