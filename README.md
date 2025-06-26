@@ -78,8 +78,9 @@ Before running this application in a docker container you'll need to add the fol
 @reboot <git clone location>/src/bin/ip_pipe.sh
 ```
 This little script will create a pipe and fetch the Host OS IP address and put it in the pipe.  
-The container will have the pipe mounted `/tmp/system_sensor_pipe:/app/host/system_sensor_pipe:ro` so it can read the ip.  
-this is required sinds docker container can't and *shouldn't* access the host OS
+The container will have the pipe mounted in\
+`/tmp/system_sensor_pipe:/app/host/system_sensor_pipe:ro`\
+so it can read the ip. This is required since docker container can't and *shouldn't* access the host OS.
 
 ## Start Container
 Running in docker container is very symplistic:
@@ -101,51 +102,81 @@ mqtt:
 
 ## Lovelace UI example:
 
-I have used following custom plugins for lovelace:
+Use the following custom plugins for lovelace:
 
 - vertical-stack-in-card
 - mini-graph-card
-- bar-card
+
+Note that due to the fact that the `bar-card` has finally been removed from HACS with HA 2025.6.3 due to it was long time unmaintained, the config has been updated with a replacement based on the idea of [replacing former bar card config](https://community.home-assistant.io/t/home-assistant-card-replacing-former-bar-card-config/743050/11).
 
 Config:
 
 ```yaml
 type: custom:vertical-stack-in-card
-title: Deconz System Monitor
+title: RPi HA System Monitor
 cards:
   - type: horizontal-stack
     cards:
       - type: custom:mini-graph-card
         entities:
-          - sensor.deconz_cpu_usage
+          - sensor.rpi_ha_cpu_usage
         name: CPU
-        line_color: '#2980b9'
+        line_color: "#2980b9"
         line_width: 2
         hours_to_show: 24
       - type: custom:mini-graph-card
         entities:
-          - sensor.deconz_temperature
+          - sensor.rpi_ha_temperature
         name: Temp
-        line_color: '#2980b9'
+        line_color: "#783f04"
         line_width: 2
         hours_to_show: 24
-  - type: custom:bar-card
-    entity: sensor.deconz_disk_use
-    name: HDD
-    positions:
-      icon: outside
-      name: inside
-    color: '#00ba6a'
-  - type: custom:bar-card
-    entity: sensor.deconz_memory_use
-    name: RAM
-    positions:
-      icon: outside
-      name: inside
   - type: entities
     entities:
-      - sensor.deconz_last_boot
-      - binary_sensor.deconz_under_voltage
+      - entity: sensor.rpi_ha_disk_use
+        name: HDD
+        card_mod:
+          style: |
+            hui-generic-entity-row {
+            border-radius: 10px;
+            background:
+              {% set perc = states(config.entity)|float(0) %}
+              {% set rest = 100 - perc %}
+              {% if perc >= 59 %} {% set bar = '255,0,0' %}
+              {% elif perc >= 44 %} {% set bar = '128,0 0' %}
+              {% elif perc >= 24 %} {% set bar = '255,165,0' %}
+              {% elif perc >= 9 %} {% set bar = '0,100,0' %}
+              {% else %} {% set bar = '0,128,0' %}
+              {% endif %}
+              /*linear-gradient(to left,ivory {{rest}}%, {{bar}} {{perc}}%);*/
+              linear-gradient(to right, rgb({{bar}},0.9) 0%, rgb({{bar}},0.6) {{perc}}%,
+                                        rgba({{bar}},0.3){{perc}}%, rgba({{bar}},0.1) 100%);
+            }
+  - type: entities
+    entities:
+      - entity: sensor.rpi_ha_memory_use
+        name: RAM
+        card_mod:
+          style: |
+            hui-generic-entity-row {
+            border-radius: 10px;
+            background:
+              {% set perc = states(config.entity)|float(0) %}
+              {% set rest = 100 - perc %}
+              {% if perc >= 59 %} {% set bar = '255,0,0' %}
+              {% elif perc >= 44 %} {% set bar = '128,0 0' %}
+              {% elif perc >= 24 %} {% set bar = '255,165,0' %}
+              {% elif perc >= 9 %} {% set bar = '0,100,0' %}
+              {% else %} {% set bar = '0,128,0' %}
+              {% endif %}
+              /*linear-gradient(to left,ivory {{rest}}%, {{bar}} {{perc}}%);*/
+              linear-gradient(to right, rgb({{bar}},0.9) 0%, rgb({{bar}},0.6) {{perc}}%,
+                                        rgba({{bar}},0.3){{perc}}%, rgba({{bar}},0.1) 100%);
+            }
+  - type: entities
+    entities:
+      - sensor.rpi_ha_last_boot
+      - binary_sensor.rpi_ha_under_voltage_2
 ```
 
 Note: you need to change the friendly name for entities like last boot in the _entity settings_, the card  prints the default entity string if no friendly name was defined.
