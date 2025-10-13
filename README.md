@@ -65,11 +65,11 @@ You need to have at least **python 3.6** installed to use System Sensors.
 
 7. `python3 src/system_sensors.py src/settings.yaml`
 8. (optional) create a service to autostart the script at boot, copy  the content of the `example_system_sensors.service` file into the editor:
-   1. `sudo systemctl edit --force --full system.sensors`
+   1. `sudo systemctl edit --force --full system_sensors`
    2. edit the path to your script path and settings.yaml. Also make sure you replace pi in "User=pi" with the account from which this script will be run. This is typically 'pi' on default raspbian system.
    3. `sudo systemctl daemon-reload`
-   4. `sudo systemctl enable --now system.sensors.service`
-   5. `sudo systemctl status system.sensors.service`
+   4. `sudo systemctl enable --now system_sensors.service`
+   5. `sudo systemctl status system_sensors.service`
    
 # Docker 
 ## Preparations
