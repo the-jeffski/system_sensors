@@ -252,6 +252,8 @@ def get_wifi_strength():  # subprocess.check_output(['/proc/net/wireless', 'grep
                           ).decode('utf-8').rstrip()
     if not wifi_strength_value:
         wifi_strength_value = '0'
+    if int(wifi_strength_value) > 0:
+        wifi_strength_value = str(-int(wifi_strength_value))
     return (wifi_strength_value)
 
 def get_wifi_ssid():
