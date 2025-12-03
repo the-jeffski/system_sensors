@@ -85,7 +85,7 @@ def send_config_message(mqttClient):
                                 + f'"state_topic":"system-sensors/sensor/{devicename}/state",'
                                 + (f'"unit_of_measurement":"{attr["unit"]}",' if 'unit' in attr else '')
                                 + f'"value_template":"{{{{value_json.{sensor}}}}}",'
-                                + f'"default_entity_id":"{devicename}_{attr["sensor_type"]}_{sensor}",'
+                                + f'"default_entity_id":"sensor.{devicename}_{attr["sensor_type"]}_{sensor}",'
                                 + f'"unique_id":"{devicename}_{attr["sensor_type"]}_{sensor}",'
                                 + f'"availability_topic":"system-sensors/sensor/{devicename}/availability",'
                                 + f'"device":{{"identifiers":["{devicename}_sensor"],'
